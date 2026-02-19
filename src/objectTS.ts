@@ -1,4 +1,13 @@
-/** * 1. THE BASE TYPE
+/**
+ * an Object is a structural data type used to store collections of data as key-value pairs. 
+ * While JavaScript objects are "dynamic" (you can add any property at any time),
+ *  TypeScript objects are schema-based,
+ *  meaning you define the "shape" of the data first.
+ */
+
+
+/** *
+ *  1. THE BASE TYPE
  * We define the "source of truth" for what a Tea object looks like.
  */
 type Tea = {
