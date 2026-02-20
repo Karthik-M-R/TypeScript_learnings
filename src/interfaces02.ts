@@ -14,10 +14,11 @@ interface TeaShop {
  */
 interface TeaShop {
     isOpen: boolean;
-    // INDEX SIGNATURE:
-    // This allows us to add any number of tea flavors dynamically.
-    // Key (flavor) must be a string, Value (stock count) must be a number.
-    [flavorName: string]: string | number | boolean; 
+ // INDEX SIGNATURE
+    // [key: T]: U
+    // T must be 'string' or 'number' (the name of the property)
+    // U is the type of the value (what that property holds)
+    [key: string]: string | number | boolean; 
 }
 
 /**
