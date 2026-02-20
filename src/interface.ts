@@ -1,3 +1,11 @@
+/**
+ * Gemini said
+In the simplest terms, an Interface is a contract or a blueprint for an object. 
+It defines exactly what properties and methods an object must have, without actually providing the logic for them.
+
+While a Class says "I am an object that works like this," an Interface says 
+"Any object that wants to be used here must look like this."
+ */
 // 1. Defining the Contract (Interface)
 interface Car {
   readonly brand: string; // 'readonly' means it cannot be changed after it's set
