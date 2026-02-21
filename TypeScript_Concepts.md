@@ -232,3 +232,147 @@ let strLength: number = (someValue as string).length;
 // Using angle-bracket syntax
 let strLength2: number = (<string>someValue).length;
 ```
+
+---
+
+## 11. TypeScript in React (Interview & Project Ready)
+React projects heavily rely on specific TS patterns.
+
+**Typing Props and Children:**
+```tsx
+import React, { ReactNode } from 'react';
+
+// Define props interface
+interface ButtonProps {
+    label: string;
+    onClick: () => void;
+    isDisabled?: boolean; // Optional prop
+    children?: ReactNode; // Best practice for typing children
+}
+
+// Avoid React.FC (Functional Component) in modern React, type props directly
+const Button = ({ label, onClick, isDisabled = false, children }: ButtonProps) => {
+    return (
+        <button onClick={onClick} disabled={isDisabled}>
+            {label}
+            {children}
+        </button>
+    );
+};
+```
+
+**Typing State and Events:**
+```tsx
+import { useState, ChangeEvent, FormEvent } from 'react';
+
+interface User { name: string; age: number; }
+
+const UserForm = () => {
+    // Infer type for simple values, use generics for complex ones or null
+    const [name, setName] = useState(""); 
+    const [user, setUser] = useState<User | null>(null); 
+
+    // Typing Event Handlers
+    const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+        setName(e.target.value);
+    };
+
+    const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
+        console.log("Submitted:", name);
+    };
+
+    return <form onSubmit={handleSubmit}><input onChange={handleChange} /></form>;
+};
+```
+
+---
+
+## 12. TypeScript in Node.js / Express
+Typing backend requests and responses is crucial for robust APIs.
+
+**Typing Request and Response:**
+```typescript
+import express, { Request, Response } from 'express';
+
+const app = express();
+
+// Typing Params, ResBody, ReqBody, ReqQuery
+app.post('/users/:id', (req: Request<{ id: string }, {}, { name: string }, { filter: string }>, res: Response) => {
+    const userId = req.params.id; // string
+    const userName = req.body.name; // string
+    const filter = req.query.filter; // string
+    
+    res.json({ success: true, id: userId });
+});
+```
+
+**Extending the Express Request Object (Common Interview Question):**
+How do you add a `user` object to the `req` after authentication?
+```typescript
+// Create a custom type declaration file (e.g., express.d.ts)
+declare global {
+    namespace Express {
+        interface Request {
+            user?: {
+                id: string;
+                role: string;
+            };
+        }
+    }
+}
+
+// Now you can use req.user in your middleware/controllers
+const authMiddleware = (req: Request, res: Response, next: Function) => {
+    req.user = { id: "123", role: "admin" }; // No TS error!
+    next();
+};
+```
+
+---
+
+## 13. Advanced Types (Interview Favorites)
+
+**`keyof` and `typeof` Operators:**
+```typescript
+const config = { endpoint: "http://api", timeout: 3000 };
+type ConfigType = typeof config; // Creates a type based on the object
+
+interface User { name: string; age: number; }
+type UserKeys = keyof User; // "name" | "age"
+
+// Real-world use case: A function that only accepts valid keys of an object
+function getProperty<T, K extends keyof T>(obj: T, key: K) {
+    return obj[key];
+}
+```
+
+**`as const` (Const Assertions) vs Enums:**
+Interviews often ask why you might prefer `as const` over `enum`. Enums compile to actual JavaScript objects, which adds bundle size. `as const` is purely type-level and compiles away completely.
+```typescript
+// Instead of enum:
+const Status = {
+    PENDING: "PENDING",
+    SUCCESS: "SUCCESS",
+    FAILED: "FAILED"
+} as const;
+
+// Extracts the values ("PENDING" | "SUCCESS" | "FAILED")
+type StatusType = typeof Status[keyof typeof Status]; 
+
+function handleStatus(status: StatusType) { /* ... */ }
+```
+
+**Mapped Types:**
+Creating new types by transforming existing ones.
+```typescript
+type Features = {
+    darkMode: boolean;
+    newUserProfile: boolean;
+};
+
+// Creates a new type where all properties of Features are optional and boolean
+type FeatureFlags = {
+    [Key in keyof Features]?: boolean;
+};
+```
